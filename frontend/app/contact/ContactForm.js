@@ -27,13 +27,14 @@ const serviceOptions = [
 
 export default function ContactForm() {
   const [isSuccess, setIsSuccess] = useState(false);
+  const [apiError, setApiError] = useState(null);
 
   const {
     register,
     handleSubmit,
     control,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
       fullName: '',
@@ -45,13 +46,62 @@ export default function ContactForm() {
     },
   });
 
-  const onSubmit = (data) => {
-    console.log('Form validated successfully:', data);
-    setIsSuccess(true);
+  const onSubmit = async (data) => {
+    setIsSuccess(false);
+    setApiError(null);
+
+    const payload = {
+      fullName: data.fullName,
+      email: data.email,
+      phone: data.phone,
+      companyName: data.companyName,
+      service: data.serviceInterestedIn,
+      message: data.message,
+    };
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${apiUrl}/api/enquiries`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      let resData = null;
+      try {
+        resData = await response.json();
+      } catch (parseErr) {
+        // Safe fallback if server returns non-JSON body
+      }
+
+      if (response.ok && response.status === 201) {
+        setIsSuccess(true);
+        setApiError(null);
+        reset();
+      } else if (response.status === 400 && resData) {
+        if (Array.isArray(resData.errors) && resData.errors.length > 0) {
+          setApiError(resData.errors.join(' '));
+        } else {
+          setApiError(resData.message || 'Validation failed. Please check your entries.');
+        }
+      } else if (response.status === 500) {
+        setApiError('Something went wrong while submitting your enquiry. Please try again.');
+      } else {
+        setApiError(
+          (resData && resData.message) ||
+            'Something went wrong while submitting your enquiry. Please try again.'
+        );
+      }
+    } catch (err) {
+      setApiError('Unable to connect to the server. Please try again later.');
+    }
   };
 
   const handleReset = () => {
     setIsSuccess(false);
+    setApiError(null);
     reset();
   };
 
@@ -131,13 +181,27 @@ export default function ContactForm() {
                 {/* Simple Success Message Banner */}
                 {isSuccess && (
                   <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-sm font-semibold flex items-center justify-between">
-                    <span>Your information looks good. Your enquiry is ready to be submitted.</span>
+                    <span>Your enquiry has been submitted successfully! We will get back to you soon.</span>
                     <button
                       onClick={handleReset}
                       type="button"
                       className="text-xs font-normal underline text-emerald-800 hover:text-emerald-950 ml-4 shrink-0"
                     >
                       Fill Again
+                    </button>
+                  </div>
+                )}
+
+                {/* API Error Message Banner */}
+                {apiError && (
+                  <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-900 text-sm font-medium flex items-center justify-between">
+                    <span>{apiError}</span>
+                    <button
+                      onClick={() => setApiError(null)}
+                      type="button"
+                      className="text-xs font-normal underline text-red-800 hover:text-red-950 ml-4 shrink-0"
+                    >
+                      Dismiss
                     </button>
                   </div>
                 )}
@@ -292,6 +356,7 @@ export default function ContactForm() {
                       variant="contained"
                       fullWidth
                       size="large"
+                      disabled={isSubmitting}
                       sx={{
                         py: 1.75,
                         backgroundColor: '#2563eb',
@@ -304,7 +369,7 @@ export default function ContactForm() {
                         fontSize: '1rem',
                       }}
                     >
-                      Submit Enquiry
+                      {isSubmitting ? 'Submitting...' : 'Submit Enquiry'}
                     </Button>
                   </div>
                 </form>

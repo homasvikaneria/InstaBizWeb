@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const pool = require('../db/db');
 const authRoutes = require('./routes/authRoutes');
 const enquiryRoutes = require('./routes/enquiryRoutes');
@@ -7,6 +8,10 @@ const errorHandler = require('./middleware/errorMiddleware');
 const app = express();
 
 // Middleware
+const allowedOrigin = process.env.CORS_ORIGIN || 'http://localhost:3000';
+app.use(cors({
+  origin: allowedOrigin
+}));
 app.use(express.json());
 
 // Routes
