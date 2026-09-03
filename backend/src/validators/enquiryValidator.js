@@ -11,10 +11,16 @@ const ALLOWED_SERVICES = [
   'Other'
 ];
 
+const ALLOWED_STATUSES = [
+  'Pending',
+  'Contacted',
+  'Resolved'
+];
+
 const validateEnquiry = (data) => {
   const errors = [];
 
-  let { fullName, email, phone, companyName, service, message } = data || {};
+  let { fullName, email, phone, companyName, service, message, status } = data || {};
 
   fullName = typeof fullName === 'string' ? fullName.trim() : '';
   email = typeof email === 'string' ? email.trim() : '';
@@ -22,6 +28,7 @@ const validateEnquiry = (data) => {
   companyName = typeof companyName === 'string' ? companyName.trim() : '';
   service = typeof service === 'string' ? service.trim() : '';
   message = typeof message === 'string' ? message.trim() : '';
+  status = typeof status === 'string' ? status.trim() : '';
 
   if (!fullName) {
     errors.push('Full name is required.');
@@ -69,6 +76,14 @@ const validateEnquiry = (data) => {
     errors.push('Message cannot exceed 2000 characters.');
   }
 
+  if (status && !ALLOWED_STATUSES.includes(status)) {
+    errors.push('Invalid status value. Allowed values: Pending, Contacted, Resolved.');
+  }
+
+  if (!status) {
+    status = 'Pending';
+  }
+
   return {
     isValid: errors.length === 0,
     errors,
@@ -78,12 +93,14 @@ const validateEnquiry = (data) => {
       phone,
       companyName,
       service,
-      message
+      message,
+      status
     }
   };
 };
 
 module.exports = {
   validateEnquiry,
-  ALLOWED_SERVICES
+  ALLOWED_SERVICES,
+  ALLOWED_STATUSES
 };

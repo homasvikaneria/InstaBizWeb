@@ -3,7 +3,11 @@ const { validateEnquiry } = require('../validators/enquiryValidator');
 
 const createEnquiry = async (req, res) => {
   try {
-    const validation = validateEnquiry(req.body);
+    // SECURITY: Ignore any client-supplied status for public enquiry creation. Always enforce 'Pending'.
+    const payload = { ...req.body };
+    delete payload.status;
+
+    const validation = validateEnquiry(payload);
 
     if (!validation.isValid) {
       return res.status(400).json({
@@ -16,9 +20,9 @@ const createEnquiry = async (req, res) => {
     const { fullName, email, phone, companyName, service, message } = validation.sanitized;
 
     const query = `
-      INSERT INTO enquiries (full_name, email, phone, company_name, service, message)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING id, full_name AS "fullName", email, phone, company_name AS "companyName", service, message, created_at AS "createdAt"
+      INSERT INTO enquiries (full_name, email, phone, company_name, service, message, status)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING id, full_name AS "fullName", email, phone, company_name AS "companyName", service, message, status, created_at AS "createdAt"
     `;
 
     const result = await pool.query(query, [
@@ -27,7 +31,8 @@ const createEnquiry = async (req, res) => {
       phone,
       companyName,
       service,
-      message
+      message,
+      'Pending'
     ]);
 
     const createdEnquiry = result.rows[0];
@@ -56,6 +61,7 @@ const getEnquiries = async (req, res) => {
         company_name AS "companyName",
         service,
         message,
+        status,
         created_at AS "createdAt",
         updated_at AS "updatedAt"
       FROM enquiries
@@ -97,6 +103,7 @@ const getEnquiryById = async (req, res) => {
         company_name AS "companyName",
         service,
         message,
+        status,
         created_at AS "createdAt",
         updated_at AS "updatedAt"
       FROM enquiries
@@ -146,7 +153,8 @@ const updateEnquiry = async (req, res) => {
       });
     }
 
-    const { fullName, email, phone, companyName, service, message } = validation.sanitized;
+    const { fullName, email, phone, companyName, service, message, status } = validation.sanitized;
+    const hasStatus = req.body && req.body.status !== undefined && req.body.status !== null;
 
     const query = `
       UPDATE enquiries
@@ -156,8 +164,9 @@ const updateEnquiry = async (req, res) => {
           company_name = $4,
           service = $5,
           message = $6,
+          status = COALESCE($7, status),
           updated_at = CURRENT_TIMESTAMP
-      WHERE id = $7
+      WHERE id = $8
       RETURNING 
         id,
         full_name AS "fullName",
@@ -166,6 +175,7 @@ const updateEnquiry = async (req, res) => {
         company_name AS "companyName",
         service,
         message,
+        status,
         created_at AS "createdAt",
         updated_at AS "updatedAt"
     `;
@@ -177,6 +187,7 @@ const updateEnquiry = async (req, res) => {
       companyName,
       service,
       message,
+      hasStatus ? status : null,
       id
     ]);
 
