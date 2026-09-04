@@ -1,12 +1,16 @@
 export const metadata = {
-  title: 'Admin Portal | InstaBizWeb',
-  description: 'InstaBizWeb Administrator Management Portal',
+  title: {
+    absolute: 'Admin Portal | InstaBizWeb',
+  },
+  description: 'InstaBizWeb administrator portal for managing enquiries.',
+  // The admin surface must never be indexed or followed by crawlers.
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
 };
 
 export default function AdminLayout({ children }) {
-  return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 font-sans antialiased">
-      {children}
-    </div>
-  );
+  return children;
 }

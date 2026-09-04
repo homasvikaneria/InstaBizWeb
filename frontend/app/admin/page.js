@@ -2,47 +2,62 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Loader2, AlertCircle, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import Logo from '../../components/layout/Logo';
+import Button from '../../components/ui/Button';
+import { Field, TextInput } from '../../components/ui/Field';
 
+/**
+ * Admin sign-in. This is what /admin resolves to — the enquiry dashboard is
+ * never reachable without a successful login.
+ *
+ * No "forgot password" link: there is no reset flow implemented behind it, and
+ * a dead link is worse than no link.
+ */
 export default function AdminLoginPage() {
   const router = useRouter();
   const { login, isAuthenticated, loading } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // If already authenticated, redirect to dashboard
   useEffect(() => {
     if (!loading && isAuthenticated) {
       router.push('/admin/dashboard');
     }
   }, [loading, isAuthenticated, router]);
 
-  // While restoring auth state or if authenticated (awaiting redirect), render a clean loading indicator
-  if (loading || isAuthenticated) {
+  // Only an already-authenticated admin gets the interstitial, and only while
+  // the redirect is in flight. `loading` deliberately does NOT gate the form:
+  // it is true during server render, so gating on it would ship a page whose
+  // only content is a spinner — and leave a permanent spinner if JS fails.
+  if (isAuthenticated) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center bg-slate-50 px-4">
-        <div className="flex flex-col items-center space-y-4 text-center">
-          <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm font-medium text-slate-600">Verifying session...</p>
+      <div className="grid min-h-screen place-items-center bg-ink-950 px-4">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-accent-400" />
+          <p className="text-sm text-ink-400">Opening dashboard…</p>
         </div>
       </div>
     );
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setFormError('');
 
-    if (!email.trim() || !password.trim()) {
-      setFormError('Please enter both email and password.');
-      return;
-    }
+    const errors = {};
+    if (!email.trim()) errors.email = 'Email is required.';
+    if (!password) errors.password = 'Password is required.';
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
 
     setIsSubmitting(true);
-
     try {
       await login(email.trim(), password);
       router.push('/admin/dashboard');
@@ -54,99 +69,95 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center bg-slate-50 px-4 py-12">
-      <div className="w-full max-w-md bg-white border border-slate-200/80 rounded-2xl shadow-xl p-8 space-y-8">
-        
-        {/* Header Branding */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 text-xs font-semibold uppercase tracking-wider">
-            InstaBizWeb
+    <div className="relative grid min-h-screen place-items-center overflow-hidden bg-ink-950 px-4 py-12">
+      <div
+        aria-hidden="true"
+        className="grid-bg-dark pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_50%_50%_at_50%_40%,#000_40%,transparent_100%)]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_40%_at_50%_0%,rgba(91,70,229,0.18),transparent_70%)]"
+      />
+
+      <div className="relative w-full max-w-sm">
+        <div className="mb-8 flex flex-col items-center text-center">
+          <Logo tone="dark" href="/" showTagline={false} />
+          <div className="mt-5 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.12em] text-ink-300">
+            <ShieldCheck className="h-3 w-3 text-accent-300" aria-hidden="true" />
+            Admin Portal
           </div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
-            Admin Portal Sign In
-          </h1>
-          <p className="text-sm text-slate-500">
-            Enter your administrator credentials to access the dashboard.
+          <h1 className="mt-4 text-2xl font-semibold tracking-[-0.02em] text-white">Sign in</h1>
+          <p className="mt-1.5 text-sm text-ink-400">
+            Enter your administrator credentials to continue.
           </p>
         </div>
 
-        {/* Error Alert Banner */}
-        {formError && (
-          <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm font-medium flex items-start gap-3">
-            <svg
-              className="w-5 h-5 text-red-500 shrink-0 mt-0.5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        <div className="rounded-2xl border border-white/10 bg-white p-6 shadow-panel">
+          {formError ? (
+            <div
+              role="alert"
+              className="mb-5 flex items-start gap-2.5 rounded-lg border border-red-200 bg-red-50 px-3.5 py-3"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-600" aria-hidden="true" />
+              <p className="text-sm text-red-800">{formError}</p>
+            </div>
+          ) : null}
+
+          <form onSubmit={handleSubmit} noValidate className="space-y-4">
+            <Field
+              label="Email Address"
+              required
+              htmlFor="admin-email"
+              error={fieldErrors.email}
+            >
+              <TextInput
+                id="admin-email"
+                type="email"
+                autoComplete="email"
+                autoFocus
+                value={email}
+                error={fieldErrors.email}
+                disabled={isSubmitting}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="admin@instabizweb.com"
               />
-            </svg>
-            <span>{formError}</span>
-          </div>
-        )}
+            </Field>
 
-        {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-          {/* Email Address */}
-          <div className="space-y-2">
-            <label htmlFor="email" className="block text-sm font-semibold text-slate-700">
-              Email Address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@instabizweb.com"
-              disabled={isSubmitting}
-              className="w-full px-4 py-3 rounded-xl border border-slate-300 text-slate-900 placeholder-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 transition-colors disabled:bg-slate-100 disabled:cursor-not-allowed text-sm"
-            />
-          </div>
+            <Field label="Password" required htmlFor="admin-password" error={fieldErrors.password}>
+              <TextInput
+                id="admin-password"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                error={fieldErrors.password}
+                disabled={isSubmitting}
+                onChange={(event) => setPassword(event.target.value)}
+                placeholder="••••••••"
+              />
+            </Field>
 
-          {/* Password */}
-          <div className="space-y-2">
-            <label htmlFor="password" className="block text-sm font-semibold text-slate-700">
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              disabled={isSubmitting}
-              className="w-full px-4 py-3 rounded-xl border border-slate-300 text-slate-900 placeholder-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 transition-colors disabled:bg-slate-100 disabled:cursor-not-allowed text-sm"
-            />
-          </div>
+            <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  Signing in…
+                </>
+              ) : (
+                'Sign In'
+              )}
+            </Button>
+          </form>
+        </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold rounded-xl shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+        <div className="mt-6 text-center">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 rounded text-sm text-ink-400 transition-colors hover:text-white"
           >
-            {isSubmitting ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Signing In...</span>
-              </>
-            ) : (
-              <span>Sign In to Dashboard</span>
-            )}
-          </button>
-        </form>
-
+            <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
+            Back to website
+          </Link>
+        </div>
       </div>
     </div>
   );
