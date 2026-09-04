@@ -29,7 +29,7 @@
 ### 🌐 **Frontend**
 [![AWS Amplify](https://img.shields.io/badge/AWS_Amplify-FF9900?style=for-the-badge&logo=awsamplify&logoColor=white)](#)
 
-[View Live Site →](https://main.dkissz3r2xx4g.amplifyapp.com/why-choose-us)
+[View Live Site →](https://main.dkissz3r2xx4g.amplifyapp.com)
 
 </td>
 <td align="center" width="50%">
