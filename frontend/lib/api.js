@@ -1,6 +1,62 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 /**
+ * Normalises every response into either parsed JSON or a thrown Error whose
+ * `.message` is safe to show a user. Server-side field errors (the `errors`
+ * array returned by the Express validators) are joined into that message so
+ * backend validation is never silently swallowed by the UI.
+ */
+async function parseResponse(response, fallbackMessage) {
+  let data;
+  try {
+    data = await response.json();
+  } catch (parseErr) {
+    const error = new Error('Unexpected response format from server.');
+    error.status = response.status;
+    throw error;
+  }
+
+  if (!response.ok || !data.success) {
+    let errorMessage = data?.message || fallbackMessage;
+    if (Array.isArray(data?.errors) && data.errors.length > 0) {
+      errorMessage = data.errors.join(' ');
+    }
+    const error = new Error(errorMessage);
+    error.status = response.status;
+    error.data = data;
+    throw error;
+  }
+
+  return data;
+}
+
+/**
+ * Submit a public enquiry via POST /api/enquiries.
+ *
+ * This is the one unauthenticated write endpoint: no token is attached, and
+ * the server ignores any client-supplied `status`.
+ *
+ * @param {{fullName: string, email: string, phone: string, companyName: string, service: string, message: string}} payload
+ * @returns {Promise<{success: boolean, message: string, enquiry: object}>}
+ */
+export async function createEnquiryApi(payload) {
+  let response;
+  try {
+    response = await fetch(`${API_URL}/api/enquiries`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  } catch (err) {
+    const error = new Error('Unable to reach the server. Please check your connection and try again.');
+    error.status = 0;
+    throw error;
+  }
+
+  return parseResponse(response, 'Could not submit your enquiry. Please try again.');
+}
+
+/**
  * Login admin user against backend POST /api/auth/login
  * @param {string} email
  * @param {string} password

@@ -1,22 +1,42 @@
-import Hero from '../components/Hero';
-import KeyOfferings from '../components/KeyOfferings';
-import ServicesPreview from '../components/ServicesPreview';
-import WhyChooseUsPreview from '../components/WhyChooseUsPreview';
-import FinalCTA from '../components/FinalCTA';
+import Hero from '../components/sections/Hero';
+import ProblemSolution from '../components/sections/ProblemSolution';
+import ServiceStack from '../components/sections/ServiceStack';
+import FeaturedCapabilities from '../components/sections/FeaturedCapabilities';
+import WhyUs from '../components/sections/WhyUs';
+import Process from '../components/sections/Process';
+import AboutTeaser from '../components/sections/AboutTeaser';
+import CTASection from '../components/sections/CTASection';
 
 export const metadata = {
-  title: 'InstaBizWeb - Digital Solutions for Business Growth',
-  description: 'Enterprise web development, custom CRM/ERP systems, process automation, and digital growth solutions for modern businesses.',
+  // `absolute` prevents the root layout's "%s | InstaBizWeb" template from
+  // appending the brand a second time on the home page.
+  title: {
+    absolute: 'InstaBizWeb — Digital Solutions for Business Growth',
+  },
+  description:
+    'InstaBizWeb is a technology partner for website development, web and mobile apps, custom software, CRM, ERP and Odoo, business process automation, AI automation, API integration and digital marketing.',
+  alternates: { canonical: '/' },
 };
 
-export default function Home() {
+/**
+ * Home narrative:
+ *   hero → the problem → what gets built → capabilities in detail →
+ *   why us → how we work → who we are → convert.
+ *
+ * Section tones alternate dark / muted / light so no two adjacent sections
+ * share a background.
+ */
+export default function HomePage() {
   return (
     <>
       <Hero />
-      <KeyOfferings />
-      <ServicesPreview />
-      <WhyChooseUsPreview />
-      <FinalCTA />
+      <ProblemSolution />
+      <ServiceStack />
+      <FeaturedCapabilities />
+      <WhyUs />
+      <Process />
+      <AboutTeaser />
+      <CTASection />
     </>
   );
 }

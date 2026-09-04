@@ -1,197 +1,147 @@
-import Link from 'next/link';
+import { Container, Section, Eyebrow } from '../../components/ui/Section';
+import Reveal from '../../components/ui/Reveal';
+import Process from '../../components/sections/Process';
+import CTASection from '../../components/sections/CTASection';
+import { ALL_SERVICES } from '../../lib/services';
 
 export const metadata = {
-  title: 'About Us | InstaBizWeb - Technology & Digital Solutions Partner',
-  description: 'Learn about InstaBizWeb, your technology and digital solutions partner dedicated to custom web development, business automation, and enterprise growth.',
+  title: 'About',
+  description:
+    'InstaBizWeb is a technology and digital solutions partner — building, connecting and automating the systems businesses run on.',
+  alternates: { canonical: '/about' },
 };
 
+const PRINCIPLES = [
+  {
+    title: 'Start with the business, not the brief',
+    body: 'A request for “a new website” is usually a request for more qualified enquiries. A request for “a dashboard” is usually a request to stop reconciling spreadsheets. We work the problem back to what it is actually for, because that is what determines the right build.',
+  },
+  {
+    title: 'Customisation where it counts',
+    body: 'Not everything needs to be bespoke. Configuration beats code where a mature product already fits — Odoo for ERP, for instance. Custom development is reserved for the workflows that genuinely make your business different, which is where it earns its cost.',
+  },
+  {
+    title: 'Automation as a design goal',
+    body: 'Manual re-keying between two systems is not a process, it is an unfixed integration. We treat every hand-off as something to design out, so the system gets quieter to run over time rather than louder.',
+  },
+  {
+    title: 'Built to still work later',
+    body: 'Scalable architecture, current and maintainable stacks, and support past launch. The measure of the work is whether it holds up under more data, more traffic and more people — not whether it demoed well.',
+  },
+];
+
 export default function AboutPage() {
-  const coreSolutions = [
-    {
-      title: 'Web & Mobile Solutions',
-      description: 'Custom responsive web platforms and intuitive mobile applications designed for high performance and seamless user interaction.',
-    },
-    {
-      title: 'Business Systems',
-      description: 'Tailored CRM, ERP, and internal management tools that give organizations total operational visibility and control.',
-    },
-    {
-      title: 'Automation & AI',
-      description: 'Intelligent process automation and AI tools engineered to eliminate manual bottlenecks and boost organizational productivity.',
-    },
-    {
-      title: 'Integration & Digital Growth',
-      description: 'Robust API bridges connecting disparate platforms with data-backed digital growth strategies.',
-    },
-  ];
-
-  const approachPrinciples = [
-    {
-      title: 'Understanding Business Requirements',
-      description: 'We start by analyzing your operational workflows to ensure software is built around actual commercial goals.',
-    },
-    {
-      title: 'Practical Digital Solutions',
-      description: 'We focus on pragmatic software architecture that delivers immediate value rather than unnecessary technical complexity.',
-    },
-    {
-      title: 'Automation Where Useful',
-      description: 'We target repetitive manual processes for intelligent automation, freeing your team to focus on strategic growth.',
-    },
-    {
-      title: 'Scalable Systems',
-      description: 'Our solutions are engineered with modular architecture, ensuring your digital infrastructure scales seamlessly as your business expands.',
-    },
-    {
-      title: 'Long-Term Maintainability',
-      description: 'We adhere to clean coding standards and clear documentation, ensuring long-term security, reliability, and ease of updates.',
-    },
-  ];
-
   return (
-    <div className="bg-slate-50 min-h-screen">
-      {/* 1. About Hero */}
-      <section className="relative bg-slate-900 text-white py-16 lg:py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(59,130,246,0.15),transparent_100%)] pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold uppercase tracking-wider">
-            About InstaBizWeb
-          </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
-            Your Technology &amp; <span className="text-blue-400">Digital Solutions</span> Partner
+    <>
+      <Section tone="dark" className="py-16 lg:py-24">
+        <div
+          aria-hidden="true"
+          className="grid-bg-dark pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_60%_70%_at_50%_0%,#000_50%,transparent_100%)]"
+        />
+        <Container size="wide" className="relative">
+          <Eyebrow tone="dark">About</Eyebrow>
+          <h1 className="mt-5 max-w-3xl text-4xl font-semibold leading-[1.08] tracking-[-0.03em] text-white sm:text-5xl">
+            A technology &amp; digital solutions partner.
           </h1>
-          <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Digital Solutions for Business Growth. We partner with businesses to design, engineer, and deploy reliable digital platforms that drive real-world operational results.
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-ink-300 sm:text-lg">
+            InstaBizWeb helps businesses grow through technology, automation and digital solutions
+            — engaged as a partner accountable for the outcome, not a vendor delivering against a
+            ticket.
           </p>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
-      {/* 2. Who We Are */}
-      <section className="py-16 lg:py-20 border-b border-slate-200/80 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            <div className="lg:col-span-6 space-y-4">
-              <span className="text-xs font-semibold uppercase tracking-widest text-blue-600">
-                Who We Are
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                Empowering Businesses Through Purpose-Built Technology
-              </h2>
-              <p className="text-slate-600 leading-relaxed text-sm sm:text-base">
-                InstaBizWeb is a modern technology and digital solutions partner. We specialize in transforming complex business challenges into intuitive, scalable web software and automated systems.
-              </p>
-              <p className="text-slate-600 leading-relaxed text-sm sm:text-base">
-                Whether you need a high-converting web presence, a custom ERP/CRM tool to manage operations, or automated workflow integrations, InstaBizWeb serves as your trusted digital team—focusing on practical software that generates measurable commercial impact.
-              </p>
+      <Section tone="light">
+        <Container size="wide">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
+            <div className="lg:col-span-4">
+              <Reveal>
+                <Eyebrow>Positioning</Eyebrow>
+              </Reveal>
             </div>
-
-            <div className="lg:col-span-6">
-              <div className="p-6 sm:p-8 rounded-2xl bg-slate-900 text-slate-200 border border-slate-800 space-y-4 shadow-xl">
-                <h3 className="text-xl font-bold text-white">Our Core Mission</h3>
-                <p className="text-sm text-slate-300 leading-relaxed">
-                  To provide accessible, robust, and scalable digital solutions that help companies streamline workflows, reach more customers, and adapt to modern digital demands.
+            <div className="lg:col-span-8">
+              <Reveal delay={60}>
+                <p className="text-2xl font-medium leading-[1.35] tracking-[-0.02em] text-ink-900 sm:text-[1.75rem] sm:leading-[1.35]">
+                  The difference between a software vendor and a technology partner shows up after
+                  launch — when the thing that was built has to survive contact with how the
+                  business really operates.
                 </p>
-                <div className="pt-4 border-t border-slate-800 grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="block text-xl font-bold text-blue-400">100% Custom</span>
-                    <span className="text-xs text-slate-400">Business-Driven Code</span>
-                  </div>
-                  <div>
-                    <span className="block text-xl font-bold text-blue-400">End-to-End</span>
-                    <span className="text-xs text-slate-400">Engineering Support</span>
-                  </div>
+                <div className="mt-8 space-y-5 text-base leading-relaxed text-ink-600">
+                  <p>
+                    A vendor scopes to the specification, ships it, and closes the engagement. That
+                    works when the specification was right. It rarely is — not because anyone got it
+                    wrong, but because a business only discovers what it needed once the first
+                    version is in front of it.
+                  </p>
+                  <p>
+                    InstaBizWeb is structured for the other case. We cover the full span —
+                    websites, web and mobile applications, custom software, CRM, ERP and Odoo,
+                    business process automation, AI automation, API and system integration, and
+                    digital marketing — so the pieces can be designed to fit together rather than
+                    integrated after the fact by whoever inherits them.
+                  </p>
+                  <p>
+                    That breadth is the point. Most of the cost in a digital operation is not in
+                    any single system; it is in the seams between them. One partner accountable for
+                    all of it is the simplest way to make those seams stop leaking.
+                  </p>
                 </div>
-              </div>
+              </Reveal>
             </div>
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
-      {/* 3. What We Do */}
-      <section className="py-16 lg:py-20 border-b border-slate-200/80 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto space-y-3 mb-12">
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-blue-600">
-              What We Do
-            </h2>
-            <p className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-              Broad Digital Capability Areas
-            </p>
-            <p className="text-sm sm:text-base text-slate-600">
-              We focus on core technology pillars designed to support every phase of digital business growth.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {coreSolutions.map((sol, index) => (
-              <div
-                key={index}
-                className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:border-blue-500/40 transition-all space-y-3"
-              >
-                <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs">
-                  0{index + 1}
+      <Section tone="muted">
+        <Container size="wide">
+          <Reveal>
+            <Eyebrow>How we think about the work</Eyebrow>
+          </Reveal>
+          <div className="mt-10 grid grid-cols-1 gap-x-14 gap-y-10 md:grid-cols-2">
+            {PRINCIPLES.map((principle, index) => (
+              <Reveal key={principle.title} delay={index * 60}>
+                <div className="border-t border-ink-300/70 pt-6">
+                  <span className="font-mono text-xs tabular-nums text-accent-700">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <h2 className="mt-3 text-xl font-semibold tracking-[-0.02em] text-ink-950">
+                    {principle.title}
+                  </h2>
+                  <p className="mt-3 text-[0.9375rem] leading-relaxed text-ink-600">
+                    {principle.body}
+                  </p>
                 </div>
-                <h3 className="text-lg font-bold text-slate-900">{sol.title}</h3>
-                <p className="text-sm text-slate-600 leading-relaxed">{sol.description}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
-      {/* 4. Business-Focused Approach */}
-      <section className="py-16 lg:py-20 border-b border-slate-200/80 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto space-y-3 mb-12">
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-blue-600">
-              Our Principles
-            </h2>
-            <p className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-              A Business-Focused Engineering Approach
-            </p>
-            <p className="text-sm sm:text-base text-slate-600">
-              Technology should serve your commercial strategy. Here is how we align development with real business needs.
-            </p>
-          </div>
+      <Section tone="light" className="py-16 lg:py-20">
+        <Container size="wide">
+          <Reveal>
+            <div className="rounded-2xl border border-ink-200 bg-ink-50/60 p-8 sm:p-10">
+              <Eyebrow>What we cover</Eyebrow>
+              <p className="mt-4 max-w-2xl text-xl font-medium leading-snug tracking-[-0.02em] text-ink-900">
+                One partner across the whole digital operation.
+              </p>
+              <ul className="mt-8 flex flex-wrap gap-2">
+                {ALL_SERVICES.map((service) => (
+                  <li
+                    key={service.name}
+                    className="rounded-lg border border-ink-200 bg-white px-3.5 py-2 text-sm text-ink-700"
+                  >
+                    {service.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Reveal>
+        </Container>
+      </Section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {approachPrinciples.map((item, idx) => (
-              <div
-                key={idx}
-                className="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 hover:bg-slate-100/80 transition-colors"
-              >
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-blue-600" />
-                  {item.title}
-                </h3>
-                <p className="text-sm text-slate-600 leading-relaxed pl-4">
-                  {item.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 5. CTA Section */}
-      <section className="py-16 lg:py-20 bg-slate-900 text-white text-center">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white tracking-tight">
-            Partner with InstaBizWeb for Your Next Digital Initiative
-          </h2>
-          <p className="text-slate-300 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
-            Ready to explore custom web applications, business systems, or process automation? Let's discuss your business requirements.
-          </p>
-          <div>
-            <Link
-              href="/contact"
-              className="inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-700 rounded-xl shadow-lg shadow-blue-600/25 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
-            >
-              Get a Free Consultation →
-            </Link>
-          </div>
-        </div>
-      </section>
-    </div>
+      <Process />
+      <CTASection />
+    </>
   );
 }
