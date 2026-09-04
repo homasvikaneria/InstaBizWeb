@@ -208,7 +208,7 @@ export default function ContactForm() {
 
                 <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">
                   <div className="border-b border-slate-200/80 pb-4">
-                    <h3 className="text-xl font-bold text-slate-900">Enquiry Form</h3>
+                    <h2 className="text-xl font-bold text-slate-900">Enquiry Form</h2>
                     <p className="text-xs text-slate-500">
                       All fields marked below are required for project analysis.
                     </p>

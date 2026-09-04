@@ -25,6 +25,7 @@ export default function Navbar() {
           {/* Brand Logo */}
           <Link
             href="/"
+            aria-label="InstaBizWeb - Home"
             className="flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded-lg p-1"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold text-xl shadow-md group-hover:scale-105 transition-transform">
@@ -94,33 +95,43 @@ export default function Navbar() {
 
       {/* Mobile Navigation Drawer */}
       {isOpen && (
-        <div className="md:hidden border-b border-slate-200 bg-white" id="mobile-menu">
-          <div className="px-4 pt-2 pb-6 space-y-1 sm:px-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                onClick={() => setIsOpen(false)}
-                className={`block px-3 py-2.5 rounded-lg text-base font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 ${
-                  isActive(link.href)
-                    ? 'text-blue-600 bg-blue-50 font-semibold'
-                    : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
-            <div className="pt-4 border-t border-slate-100 mt-2">
-              <Link
-                href="/contact"
-                onClick={() => setIsOpen(false)}
-                className="block w-full text-center px-4 py-3 text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-lg shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
-              >
-                Get a Free Consultation
-              </Link>
+        <>
+          {/* Backdrop Overlay */}
+          <div
+            className="fixed inset-0 top-20 bg-slate-900/40 backdrop-blur-xs z-40 md:hidden"
+            onClick={() => setIsOpen(false)}
+            aria-hidden="true"
+          />
+
+          {/* Mobile Menu Content */}
+          <div className="relative z-50 md:hidden border-b border-slate-200 bg-white shadow-lg" id="mobile-menu">
+            <div className="px-4 pt-2 pb-6 space-y-1 sm:px-3">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setIsOpen(false)}
+                  className={`block px-3 py-2.5 rounded-lg text-base font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 ${
+                    isActive(link.href)
+                      ? 'text-blue-600 bg-blue-50 font-semibold'
+                      : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              ))}
+              <div className="pt-4 border-t border-slate-100 mt-2">
+                <Link
+                  href="/contact"
+                  onClick={() => setIsOpen(false)}
+                  className="block w-full text-center px-4 py-3 text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-lg shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+                >
+                  Get a Free Consultation
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </header>
   );

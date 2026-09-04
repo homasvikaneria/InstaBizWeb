@@ -22,6 +22,31 @@ const STATUS_OPTIONS = ['Pending', 'Contacted', 'Resolved'];
 
 const PAGE_SIZE = 10;
 
+const getPaginationRange = (currentPage, totalPages) => {
+  if (totalPages <= 5) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  let start = Math.max(2, currentPage - 1);
+  let end = Math.min(totalPages - 1, currentPage + 1);
+
+  if (currentPage <= 3) {
+    start = 2;
+    end = 4;
+  } else if (currentPage >= totalPages - 2) {
+    start = totalPages - 3;
+    end = totalPages - 1;
+  }
+
+  const range = [1];
+  if (start > 2) range.push('ellipsis-left');
+  for (let i = start; i <= end; i++) range.push(i);
+  if (end < totalPages - 1) range.push('ellipsis-right');
+  range.push(totalPages);
+
+  return range;
+};
+
 export default function AdminDashboardPage() {
   const router = useRouter();
   const { token, admin, isAuthenticated, loading: authLoading, logout } = useAuth();
@@ -466,11 +491,59 @@ export default function AdminDashboardPage() {
             </span>
           </div>
 
-          {/* State 1: Data Loading */}
+          {/* State 1: Data Loading (Table Skeleton) */}
           {dataLoading && (
-            <div className="py-12 flex flex-col items-center justify-center text-center space-y-3">
-              <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm text-slate-500 font-medium">Loading enquiries from database...</p>
+            <div className="space-y-4" aria-busy="true">
+              <div className="overflow-x-auto border border-slate-200/80 rounded-xl shadow-sm">
+                <table className="w-full text-left text-sm text-slate-600 border-collapse">
+                  <thead className="bg-slate-50 border-b border-slate-200/80 text-xs uppercase font-semibold text-slate-500 tracking-wider">
+                    <tr>
+                      <th scope="col" className="px-6 py-3.5">Name</th>
+                      <th scope="col" className="px-6 py-3.5">Email</th>
+                      <th scope="col" className="px-6 py-3.5">Phone</th>
+                      <th scope="col" className="px-6 py-3.5">Company</th>
+                      <th scope="col" className="px-6 py-3.5">Service</th>
+                      <th scope="col" className="px-6 py-3.5">Status</th>
+                      <th scope="col" className="px-6 py-3.5">Date</th>
+                      <th scope="col" className="px-6 py-3.5 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 bg-white">
+                    {[1, 2, 3, 4, 5].map((idx) => (
+                      <tr key={idx} className="animate-pulse">
+                        <td className="px-6 py-4">
+                          <div className="h-4 bg-slate-200 rounded-md w-28" />
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="h-4 bg-slate-200 rounded-md w-36" />
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="h-4 bg-slate-200 rounded-md w-24" />
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="h-4 bg-slate-200 rounded-md w-28" />
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="h-5 bg-slate-200 rounded-md w-32" />
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="h-6 bg-slate-200 rounded-lg w-20" />
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="h-4 bg-slate-200 rounded-md w-20" />
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <div className="h-6 bg-slate-200 rounded-lg w-12" />
+                            <div className="h-6 bg-slate-200 rounded-lg w-10" />
+                            <div className="h-6 bg-slate-200 rounded-lg w-14" />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 
@@ -738,7 +811,7 @@ export default function AdminDashboardPage() {
                 </div>
 
                 {totalPages > 1 && (
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex flex-wrap items-center justify-center gap-1.5">
                     {/* Previous Page Button */}
                     <button
                       type="button"
@@ -750,20 +823,32 @@ export default function AdminDashboardPage() {
                     </button>
 
                     {/* Page Number Buttons */}
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                      <button
-                        key={pageNum}
-                        type="button"
-                        onClick={() => setCurrentPage(pageNum)}
-                        className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
-                          currentPage === pageNum
-                            ? 'bg-blue-600 text-white shadow-sm'
-                            : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
-                        }`}
-                      >
-                        {pageNum}
-                      </button>
-                    ))}
+                    {getPaginationRange(currentPage, totalPages).map((item) => {
+                      if (typeof item === 'string') {
+                        return (
+                          <span
+                            key={item}
+                            className="w-7 h-8 flex items-center justify-center text-xs text-slate-400 font-bold select-none"
+                          >
+                            •••
+                          </span>
+                        );
+                      }
+                      return (
+                        <button
+                          key={item}
+                          type="button"
+                          onClick={() => setCurrentPage(item)}
+                          className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
+                            currentPage === item
+                              ? 'bg-blue-600 text-white shadow-sm'
+                              : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                          }`}
+                        >
+                          {item}
+                        </button>
+                      );
+                    })}
 
                     {/* Next Page Button */}
                     <button
@@ -786,7 +871,10 @@ export default function AdminDashboardPage() {
 
       {/* View Details Modal */}
       {viewModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
+          onClick={handleCloseViewModal}
+        >
           <div
             className="bg-white border border-slate-200/90 rounded-2xl shadow-xl max-w-2xl w-full p-6 sm:p-8 space-y-6 relative max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
@@ -812,11 +900,27 @@ export default function AdminDashboardPage() {
               </button>
             </div>
 
-            {/* Modal Body: Loading */}
+            {/* Modal Body: Details Skeleton */}
             {viewLoading && (
-              <div className="py-12 flex flex-col items-center justify-center text-center space-y-3">
-                <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                <p className="text-sm text-slate-500 font-medium">Fetching details from server...</p>
+              <div className="space-y-6 animate-pulse" aria-busy="true">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+                    <div key={i} className="p-3.5 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
+                      <div className="h-3 bg-slate-200 rounded w-20" />
+                      <div className="h-4 bg-slate-300 rounded w-32" />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Message Content Placeholder */}
+                <div className="space-y-2">
+                  <div className="h-3 bg-slate-200 rounded w-28" />
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                    <div className="h-3.5 bg-slate-200 rounded w-full" />
+                    <div className="h-3.5 bg-slate-200 rounded w-4/5" />
+                    <div className="h-3.5 bg-slate-200 rounded w-2/3" />
+                  </div>
+                </div>
               </div>
             )}
 
@@ -935,7 +1039,10 @@ export default function AdminDashboardPage() {
 
       {/* Edit Details Modal */}
       {editModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
+          onClick={() => !editSubmitting && handleCloseEditModal()}
+        >
           <div
             className="bg-white border border-slate-200/90 rounded-2xl shadow-xl max-w-2xl w-full p-6 sm:p-8 space-y-6 relative max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
@@ -1140,7 +1247,10 @@ export default function AdminDashboardPage() {
 
       {/* Delete Confirmation Modal */}
       {deleteModalOpen && deleteItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
+          onClick={() => !deleteSubmitting && handleCloseDeleteModal()}
+        >
           <div
             className="bg-white border border-slate-200/90 rounded-2xl shadow-xl max-w-md w-full p-6 space-y-6 relative"
             onClick={(e) => e.stopPropagation()}

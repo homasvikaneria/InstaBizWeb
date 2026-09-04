@@ -19,6 +19,7 @@ export default function Footer() {
           <div className="md:col-span-2 space-y-4">
             <Link
               href="/"
+              aria-label="InstaBizWeb - Home"
               className="inline-flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg"
             >
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
